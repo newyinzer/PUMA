@@ -21,3 +21,7 @@ http://www.addicore.com/2pcs-Addicore-nRF24L01-Wireless-Transceiver-p/112.htm
 
 http://playground.arduino.cc/InterfacingWithHardware/Nrf24L01
 
+Thunderbird:
+
+http://www.torinocobra.com/torino_paint_colors.htm
+
