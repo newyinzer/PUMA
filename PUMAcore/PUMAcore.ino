@@ -1,42 +1,41 @@
-/* YourDuinoStarter Example: nRF24L01 Receive Joystick values
+/* 
+PUMAcore.ino
 
- - WHAT IT DOES: Receives data from another transceiver with
-   2 Analog values from a Joystick or 2 Potentiometers
-   Displays received values on Serial Monitor
- - SEE the comments after "//" on each line below
- - CONNECTIONS: nRF24L01 Modules See:
- http://arduino-info.wikispaces.com/Nrf24L01-2.4GHz-HowTo
-   1 - GND
-   2 - VCC 3.3V !!! NOT 5V
-   3 - CE to Arduino pin 9
-   4 - CSN to Arduino pin 10
-   5 - SCK to Arduino pin 13
-   6 - MOSI to Arduino pin 11
-   7 - MISO to Arduino pin 12
-   8 - UNUSED
-   
- - V1.00 11/26/13
-   Based on examples at http://www.bajdi.com/
-   Questions: terry@yourduino.com */
+Description:
+PUMA receives two joystick values from Pi and sends what it gets back on the monitor.
+This is primarily to test radio functionality. Motor functionality will be added later.
 
-/*-----( Import needed libraries )-----*/
+Connections:
+1 - GND
+2 - VCC 3.3V !!! NOT 5V
+3 - CE to Arduino pin 9
+4 - CSN to Arduino pin 10
+5 - SCK to Arduino pin 13
+6 - MOSI to Arduino pin 11
+7 - MISO to Arduino pin 12
+8 - UNUSED
+*/
+
+// Libraries
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-/*-----( Declare Constants and Pin Numbers )-----*/
+
+// Constants
 #define CE_PIN   9
 #define CSN_PIN 10
 
-// NOTE: the "LL" at the end of the constant is "LongLong" type
+// Pipes
 const uint64_t pipe = 0xE8E8F0F0E1LL; // Define the transmit pipe
 
-
-/*-----( Declare objects )-----*/
+// Radio
 RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
-/*-----( Declare Variables )-----*/
+
+// Joystick Values
 int joystick[2];  // 2 element array holding Joystick readings
 
-void setup()   /****** SETUP: RUNS ONCE ******/
+// setup: Sets up system
+void setup()
 {
   Serial.begin(9600);
   delay(1000);
@@ -44,10 +43,10 @@ void setup()   /****** SETUP: RUNS ONCE ******/
   radio.begin();
   radio.openReadingPipe(1,pipe);
   radio.startListening();;
-}//--(end setup )---
+}
 
-
-void loop()   /****** LOOP: RUNS CONSTANTLY ******/
+// loop: Runs constantly
+void loop()
 {
   if ( radio.available() )
   {
@@ -68,9 +67,4 @@ void loop()   /****** LOOP: RUNS CONSTANTLY ******/
       Serial.println("No radio available");
   }
 
-}//--(end main loop )---
-
-/*-----( Declare User-written Functions )-----*/
-
-//NONE
-//*********( THE END )***********
+}
