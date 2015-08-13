@@ -1,4 +1,8 @@
 /*
+PUMA:
+
+Copied from reference document, here as reference only
+
  Modified code of Getting Started RF24 Library
  It will switch a relay on if receive a message with text 1, 
  turn it off otherwise.
