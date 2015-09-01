@@ -1,57 +1,26 @@
-#include <AFMotor.h>
-
-AF_DCMotor motor_l(2);
-AF_DCMotor motor_r(4);
+int ENA=5;//connected to Arduino's port 5(output pwm)
+int IN1=2;//connected to Arduino's port 2
+int IN2=3;//connected to Arduino's port 3
+int ENB=6;//connected to Arduino's port 6(output pwm)
+int IN3=4;//connected to Arduino's port 4
+int IN4=7;//connected to Arduino's port 7
 
 void setup() {
-  Serial.begin(9600);           // set up Serial library at 9600 bps
-  Serial.println("Motor test!");
-
-  // turn on motors
-  motor_l.setSpeed(200);
-  motor_r.setSpeed(200);
-  motor_l.run(RELEASE);
-  motor_r.run(RELEASE);
+  pinMode(ENA,OUTPUT);//output
+  pinMode(ENB,OUTPUT);
+  pinMode(IN1,OUTPUT);
+  pinMode(IN2,OUTPUT);
+  pinMode(IN3,OUTPUT);
+  pinMode(IN4,OUTPUT);
+  digitalWrite(ENA,LOW);
+  digitalWrite(ENB,LOW);//stop driving
+  digitalWrite(IN1,LOW); 
+  digitalWrite(IN2,HIGH);//setting motor1's directon
+  digitalWrite(IN3,HIGH);
+  digitalWrite(IN4,LOW);//setting motor2's directon
 }
 
 void loop() {
-  uint8_t i;
-  
-  Serial.print("tick");
-  
-  motor_l.run(FORWARD);
-  motor_r.run(FORWARD);
-  
-  for (i=0; i<255; i++) {
-    motor_l.setSpeed(i);  
-    motor_r.setSpeed(i);
-    delay(10);
- }
- 
-  for (i=255; i!=0; i--) {
-    motor_l.setSpeed(i);  
-    motor_r.setSpeed(i);
-    delay(10);
- }
-  
-  Serial.print("tock");
-
-  motor.run(BACKWARD);
-  for (i=0; i<255; i++) {
-    motor_l.setSpeed(i);  
-    motor_r.setSpeed(i); 
-    delay(10);
- }
- 
-  for (i=255; i!=0; i--) {
-    motor_l.setSpeed(i); 
-    motor_r.setSpeed(i);
-    delay(10);
- }
-  
-
-  Serial.print("tech");
-  motor_l.run(RELEASE);
-  motor_r.run(RELEASE);
-  delay(1000);
+  analogWrite(ENA,255);//start driving motor1
+  analogWrite(ENB,255);//start driving motor2
 }
