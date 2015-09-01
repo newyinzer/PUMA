@@ -9,6 +9,10 @@ https://learn.adafruit.com/arduino-tips-tricks-and-techniques/arduino-libraries
 
 http://osepp.com/products/shield-arduino-compatible/motor-servo-shield/
 
+New Motor Shield:
+
+http://osepp.com/products/sensors-arduino-compatible/motor-driver/
+
 Transceiver:
 
 https://www.arduino.cc/en/Reference/SPI
@@ -25,3 +29,16 @@ Thunderbird:
 
 http://www.torinocobra.com/torino_paint_colors.htm
 
+Arduino Pin Assignments:
+2 = IN1 (Motor Shield, motor1, rev)
+3 = IN2 (Motor Shield, motor1, fwd)
+4 = IN3 (Motor Shield, motor2, rev)
+5 = ENA (Motor Shield, motor1, pwm)
+6 = ENB (Motor Shield, motor2, pwm)
+7 = IN4 (Motor Shield, motor2, fwd)
+8 = NDATA (No Data LED)
+9 = CE (Transceiver, 3)
+10 = CSN (Transceiver, 4)
+11 = MOSI (Transceiver, 6)
+12 = MISO (Transceiver, 7)
+13 = SCK (Transceiver, 5)
