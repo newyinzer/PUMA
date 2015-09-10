@@ -24,6 +24,16 @@ Connections:
 // Constants
 #define CE_PIN   9
 #define CSN_PIN 10
+#define LFWD 0
+#define LREV 1
+#define RFWD 0
+#define RREV 1
+
+// Variables
+int ldirection;
+int rdirection;
+int lspeed;
+int rspeed;
 
 // Pipes
 const uint64_t pipe = 0xE8E8F0F0E1LL; // Define the transmit pipe
@@ -34,6 +44,8 @@ RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 // Joystick Values
 int joystick[2];  // 2 element array holding Joystick readings
 
+// 
+
 // setup: Sets up system
 void setup()
 {
@@ -42,7 +54,7 @@ void setup()
   Serial.println("Nrf24L01 Receiver Starting");
   radio.begin();
   radio.openReadingPipe(1,pipe);
-  radio.startListening();;
+  radio.startListening();
 }
 
 // loop: Runs constantly
