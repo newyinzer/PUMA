@@ -28,6 +28,7 @@ Connections:
 #define LREV 1
 #define RFWD 0
 #define RREV 1
+#define SCALING 7
 
 // Variables
 int ldirection;
@@ -44,8 +45,6 @@ RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 // Joystick Values
 int joystick[2];  // 2 element array holding Joystick readings
 
-// 
-
 // setup: Sets up system
 void setup()
 {
@@ -55,6 +54,10 @@ void setup()
   radio.begin();
   radio.openReadingPipe(1,pipe);
   radio.startListening();
+  ldirection = LFWD;
+  rdirection = RFWD;
+  lspeed = 0;
+  rspeed = 0;
 }
 
 // loop: Runs constantly
@@ -62,21 +65,49 @@ void loop()
 {
   if ( radio.available() )
   {
+    Serial.println("Radio Available");
     // Read the data payload until we've received everything
     bool done = false;
     while (!done)
     {
       // Fetch the data payload
       done = radio.read( joystick, sizeof(joystick) );
-      Serial.print("X = ");
+      Serial.print("L = ");
       Serial.print(joystick[0]);
-      Serial.print(" Y = ");      
+      Serial.print(" R = ");      
       Serial.println(joystick[1]);
     }
+    
+    lspeed = joystick[0] >> SCALING;
+    lspeed = abs(lspeed);
+    
+    rspeed = joystick[1] >> SCALING;
+    rspeed = abs(rspeed);
+    
+    if(joystick[0] < 0) { ldirection = LREV; }
+    else { ldirection = LFWD; }
+    if(joystick[1] < 0) { rdirection = RREV; }
+    else { rdirection = RFWD; }
   }
   else
   {    
-      Serial.println("No radio available");
+      Serial.println("NO Radio Available");
+      ldirection = LFWD;
+      rdirection = RFWD;
+      lspeed = 0;
+      rspeed = 0;
   }
-
+  
+  // Print Left
+  if(ldirection = LREV) { Serial.print("Left Reverse "); }
+  else { Serial.print("Left Forward "); }
+  Serial.println(lspeed);
+  
+  // Print Right
+  if(rdirection = RREV) { Serial.print("Right Reverse "); }
+  else { Serial.print("Right Forward "); }
+  Serial.println(rspeed);
+  
+  // Wait
+  delay(100);
 }
