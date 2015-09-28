@@ -13,21 +13,19 @@ j = pygame.joystick.Joystick(0)
 j.init()
 print 'Initialized Joystick : %s' % j.get_name()
 
-# Keeps a history of buttons pressed so that one press does
-# not send multiple presses to the Arduino Board
-button_history = [0,0,0,0,0,0,0,0,0,0,0,0]
+# Keeps a history of axes
+axis_history = [0,0,0,0,0]
+axis_val = 0
 
 try:
     while True:
         pygame.event.pump()
-
-        for i in range(0, j.get_numbuttons()):
-            if j.get_button(i) != 0:
-                if not button_history[i]:
-                    print 'Button %i reads %i' % (i, j.get_button(i))
-                    button_history[i] = 1
-            else:
-                button_history[i] = 0
-
+	print '%i %i' % (axis_history[2],axis_history[3])
+        for i in range(0, j.get_numaxes()):
+		axis_val = j.get_axis(i)
+		axis_val = axis_val * 32767.0
+		axis_history[i] = int(axis_val)
+		#print '%f' % axis_val
+		#axis_history[i] = j.get_axis(i)
 except KeyboardInterrupt:
     j.quit()
