@@ -10,8 +10,8 @@ radio = RF24(RPI_BPLUS_GPIO_J8_22, RPI_BPLUS_GPIO_J8_24, BCM2835_SPI_SPEED_8MHZ)
 
 pipes = [0xF0F0F0F0E1, 0xF0F0F0F0D2]
 payload_size = 4
-send_payload = bytearray([0xDE, 0xAD, 0xBE, 0xEF])
-string_payload = "dddd"
+send_payload = bytearray([0x41, 0x42, 0x43, 0x44])
+string_payload = "eeee"
 
 radio.begin()
 radio.enableDynamicPayloads()
