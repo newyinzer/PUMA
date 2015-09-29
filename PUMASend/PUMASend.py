@@ -11,6 +11,7 @@ radio = RF24(RPI_BPLUS_GPIO_J8_22, RPI_BPLUS_GPIO_J8_24, BCM2835_SPI_SPEED_8MHZ)
 pipes = [0xF0F0F0F0E1, 0xF0F0F0F0D2]
 payload_size = 4
 send_payload = bytearray([0xDE, 0xAD, 0xBE, 0xEF])
+string_payload = "dddd"
 
 radio.begin()
 radio.enableDynamicPayloads()
@@ -28,6 +29,7 @@ while 1:
 
         # Take the time, and send it.  This will block until complete
         print 'Now sending length ', payload_size, ' ... ',
-        radio.write(send_payload[:payload_size])
+	string_payload = "".join(map(chr,send_payload))
+        radio.write(string_payload[:payload_size])
 
         time.sleep(5)
