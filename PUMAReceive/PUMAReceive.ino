@@ -37,13 +37,13 @@ int lspeed;
 int rspeed;
 
 // Pipes
-const uint64_t pipe = 0xE8E8F0F0E1LL; // Define the transmit pipe
+const uint64_t pipe = 0xF0F0F0F0E1LL; // Define the transmit pipe
 
 // Radio
 RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 
 // Joystick Values
-int joystick[2];  // 2 element array holding Joystick readings
+int joystick[4];  // 4 element array holding Joystick readings
 
 // setup: Sets up system
 void setup()
@@ -75,7 +75,11 @@ void loop()
       Serial.print("L = ");
       Serial.print(joystick[0]);
       Serial.print(" R = ");      
-      Serial.println(joystick[1]);
+      Serial.print(joystick[1]);
+      Serial.print(" Special2 = ");      
+      Serial.print(joystick[2]);
+      Serial.print(" Special3 = ");      
+      Serial.println(joystick[3]);
     }
     
     lspeed = joystick[0] >> SCALING;
