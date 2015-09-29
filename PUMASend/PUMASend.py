@@ -1,59 +1,117 @@
-#!/usr/bin/python
-# raspberry pi nrf24l01 hub
-# more details at http://blog.riyas.org
-# Credits to python port of nrf24l01, Joao Paulo Barrac & maniacbugs original c library
-# ======================= changes on may 1,2015=======================
-#added csv write..and parses multiple data elements (Temp, press, humidity)
-#result goes to a file called temp.csv in the same place as this file
+#!/usr/bin/env python
 
-from nrf24 import NRF24
+#
+# Example using Dynamic Payloads
+# 
+#  This is an example of how to use payloads of a varying (dynamic) size.
+# 
+
 import time
-from time import gmtime, strftime
-from datetime import datetime
+from RF24 import *
 
-pipes = [[0xf0, 0xf0, 0xf0, 0xf0, 0xe1], [0xf0, 0xf0, 0xf0, 0xf0, 0xd2]]
 
-radio = NRF24()
-radio.begin(0, 0,25,18) #set gpio 25 as CE pin
-radio.setRetries(15,15)
-radio.setPayloadSize(32)
-radio.setChannel(0x4c)
-radio.setDataRate(NRF24.BR_250KBPS)
-radio.setPALevel(NRF24.PA_MAX)
-radio.setAutoAck(1)
-radio.openWritingPipe(pipes[0])
-radio.openReadingPipe(1, pipes[1])
-radio.startListening()
-radio.stopListening()
+# CE Pin, CSN Pin, SPI Speed
 
+# Setup for GPIO 22 CE and GPIO 25 CSN with SPI Speed @ 1Mhz
+#radio = radio(RPI_V2_GPIO_P1_22, RPI_V2_GPIO_P1_18, BCM2835_SPI_SPEED_1MHZ)
+
+# Setup for GPIO 22 CE and CE0 CSN with SPI Speed @ 4Mhz
+#radio = RF24(RPI_V2_GPIO_P1_15, BCM2835_SPI_CS0, BCM2835_SPI_SPEED_4MHZ)
+
+# Setup for GPIO 22 CE and CE1 CSN with SPI Speed @ 8Mhz
+#radio = RF24(RPI_V2_GPIO_P1_15, BCM2835_SPI_CS0, BCM2835_SPI_SPEED_8MHZ)
+
+# Setup for GPIO 22 CE and CE0 CSN for RPi B+ with SPI Speed @ 8Mhz
+radio = RF24(RPI_BPLUS_GPIO_J8_22, RPI_BPLUS_GPIO_J8_24, BCM2835_SPI_SPEED_8MHZ)
+
+
+pipes = [0xF0F0F0F0E1, 0xF0F0F0F0D2]
+min_payload_size = 4
+max_payload_size = 32
+payload_size_increments_by = 1
+next_payload_size = min_payload_size
+inp_role = 'none'
+send_payload = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ789012'
+millis = lambda: int(round(time.time() * 1000))
+
+print 'pyRF24/examples/pingpair_dyn/'
+radio.begin()
+radio.enableDynamicPayloads()
+radio.setRetries(5,15)
 radio.printDetails()
-radio.startListening()
-def hasNumbers(inputString):
-    return any(char.isdigit() for char in inputString)
-def extract(raw_string, start_marker, end_marker):
-    start = raw_string.index(start_marker) + len(start_marker)
-    end = raw_string.index(end_marker, start)
-    return raw_string[start:end]
-while True:
-    pipe = [0]
-    while not radio.available(pipe, True):
-        time.sleep(1000/1000000.0)
-    recv_buffer = []
-    radio.read(recv_buffer)
-    out = ''.join(chr(i) for i in recv_buffer)
-    temper=extract(out,'T','T')
-    humid=extract(out,'H','H')
-    press=extract(out,'P','P')
-    #import pdb; pdb.set_trace()
-    #print out
-    print temper
-    print humid
-    print press
-    #write to csv if temper has a number
-    if  hasNumbers(temper):
-        print "writing csv"
-        date = str(datetime.now())
-        filep = open("temp.csv", "a")
-        print >> filep, ";".join([date,temper, humid, press])
-        filep.close()
+
+print ' ************ Role Setup *********** '
+while (inp_role !='0') and (inp_role !='1'):
+    inp_role = raw_input('Choose a role: Enter 0 for receiver, 1 for transmitter (CTRL+C to exit) ')
+
+if inp_role == '0':
+    print 'Role: Pong Back, awaiting transmission'
+    radio.openWritingPipe(pipes[1])
+    radio.openReadingPipe(1,pipes[0])
+    radio.startListening()
+else:
+    print 'Role: Ping Out, starting transmission'
+    radio.openWritingPipe(pipes[0])
+    radio.openReadingPipe(1,pipes[1])
+
+# forever loop
+while 1:
+    if inp_role == '1':   # ping out
+        # The payload will always be the same, what will change is how much of it we send.
+
+        # First, stop listening so we can talk.
+        radio.stopListening()
+
+        # Take the time, and send it.  This will block until complete
+        print 'Now sending length ', next_payload_size, ' ... ',
+        radio.write(send_payload[:next_payload_size])
+
+        # Now, continue listening
+        radio.startListening()
+
+        # Wait here until we get a response, or timeout
+        started_waiting_at = millis()
+        timeout = False
+        while (not radio.available()) and (not timeout):
+            if (millis() - started_waiting_at) > 500:
+                timeout = True
+
+        # Describe the results
+        if timeout:
+            print 'failed, response timed out.'
+        else:
+            # Grab the response, compare, and send to debugging spew
+            len = radio.getDynamicPayloadSize()
+            receive_payload = radio.read(len)
+
+            # Spew it
+            print 'got response size=', len, ' value="', receive_payload, '"'
+
+        # Update size for next time.
+        next_payload_size += payload_size_increments_by
+        if next_payload_size > max_payload_size:
+            next_payload_size = min_payload_size
+        time.sleep(0.1)
+    else:
+        # Pong back role.  Receive each packet, dump it out, and send it back
+
+        # if there is data ready
+        if radio.available():
+            while radio.available():
+                # Fetch the payload, and see if this was the last one.
+	            len = radio.getDynamicPayloadSize()
+	            receive_payload = radio.read(len)
+
+	            # Spew it
+	            print 'Got payload size=', len, ' value="', receive_payload, '"'
+
+            # First, stop listening so we can talk
+            radio.stopListening()
+
+            # Send the final one back.
+            radio.write(receive_payload)
+            print 'Sent response.'
+
+            # Now, resume listening so we catch the next packets.
+            radio.startListening()
     
