@@ -39,13 +39,13 @@ Radio Connections:
 #define RFWD 0
 #define RREV 1
 #define SCALING 0
-#define CFG 0 // Activate motor out
+#define CFG 1 // Activate motor out
 
 // Variables
 int ldirection;
 int rdirection;
-int lspeed;
-int rspeed;
+byte lspeed;
+byte rspeed;
 
 // Pipes
 const uint64_t pipe_t = 0xF0F0F0F0D2LL; // Define the transmit pipe
@@ -131,16 +131,22 @@ void loop()
       Serial.println(joystick[3]);
     }
     
-    lspeed = joystick[0] >> SCALING;
-    lspeed = abs(lspeed);
-    
-    rspeed = joystick[1] >> SCALING;
-    rspeed = abs(rspeed);
-    
-    if(joystick[0] < 0) { ldirection = LREV; }
-    else { ldirection = LFWD; }
-    if(joystick[1] < 0) { rdirection = RREV; }
-    else { rdirection = RFWD; }
+    if(joystick[0] > 127) { 
+      ldirection = LREV; 
+      lspeed = (255 - joystick[0]) << 1;
+    }
+    else { 
+      ldirection = LFWD; 
+      lspeed = joystick[0] << 1;
+    }
+    if(joystick[1] > 127) { 
+      rdirection = RREV; 
+      rspeed = (255 - joystick[1]) << 1;
+    }
+    else { 
+      rdirection = RFWD; 
+      rspeed = joystick[1] << 1;
+    }
   }
   else
   {    
@@ -152,19 +158,19 @@ void loop()
   }
   
   // Print Left
-  if(ldirection = LREV) { 
+  if(ldirection == LREV) { 
     Serial.print("Left Reverse "); 
-    digitalWrite(IN1,HIGH); 
-    digitalWrite(IN2,LOW);
-  }
-  else { 
-    Serial.print("Left Forward "); 
     digitalWrite(IN1,LOW); 
     digitalWrite(IN2,HIGH);
   }
+  else { 
+    Serial.print("Left Forward "); 
+    digitalWrite(IN1,HIGH); 
+    digitalWrite(IN2,LOW);
+  }
   if(CFG == 1) {
     Serial.print(" ACTIVE ");
-    analogWrite(ENA,rspeed);
+    analogWrite(ENA,lspeed);
   } 
   else {
     Serial.print(" NOT ACTIVE ");
@@ -173,15 +179,15 @@ void loop()
   Serial.println(lspeed);
   
   // Print Right
-  if(rdirection = RREV) { 
+  if(rdirection == RREV) { 
     Serial.print("Right Reverse "); 
-    digitalWrite(IN3,LOW);
-    digitalWrite(IN4,HIGH);
+    digitalWrite(IN3,HIGH);
+    digitalWrite(IN4,LOW);
   }
   else { 
     Serial.print("Right Forward "); 
-    digitalWrite(IN3,HIGH);
-    digitalWrite(IN4,LOW);
+    digitalWrite(IN3,LOW);
+    digitalWrite(IN4,HIGH);
   }
   if(CFG == 1) {
     Serial.print(" ACTIVE ");
@@ -194,5 +200,5 @@ void loop()
   Serial.println(rspeed);
   
   // Wait
-  delay(100);
+  delay(1000);
 }
