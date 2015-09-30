@@ -5,7 +5,7 @@ Description:
 PUMA receives two joystick values from Pi and sends what it gets back on the monitor.
 This is primarily to test radio functionality. Motor functionality will be added later.
 
-Connections:
+Radio Connections:
 1 - GND
 2 - VCC 3.3V !!! NOT 5V
 3 - CE to Arduino pin 7
@@ -23,14 +23,23 @@ Connections:
 #include <nRF24L01.h>
 #include <printf.h>
 
+// Pin Assignments
+#define CE_PIN 7 // Radio
+#define CSN_PIN 8 // Radio
+#define ENA 5 // Connected to Arduino's port 5(output pwm)
+#define IN1 2 // Connected to Arduino's port 2
+#define IN2 3 // Connected to Arduino's port 3
+#define ENB 6 // Connected to Arduino's port 6(output pwm)
+#define IN3 4 // Connected to Arduino's port 4
+#define IN4 9 // Connected to Arduino's port 9
+
 // Constants
-#define CE_PIN 7
-#define CSN_PIN 8
 #define LFWD 0
 #define LREV 1
 #define RFWD 0
 #define RREV 1
 #define SCALING 0
+#define CFG 0 // Activate motor out
 
 // Variables
 int ldirection;
@@ -55,9 +64,14 @@ byte joystick[4];  // 4 element array holding Joystick readings
 // setup: Sets up system
 void setup()
 {
+  // Start serial transmission
   Serial.begin(57600);
+  
+  // Wait 2 seconds
   delay(2000);
   printf_begin();
+  
+  // Start Radio
   Serial.println("Nrf24L01 Receiver Starting");
   done = radio.begin();
   Serial.println("");
@@ -73,6 +87,21 @@ void setup()
   lspeed = 0;
   rspeed = 0;
   i = 0;
+  
+  // Start Motors
+  Serial.println("Motor System Starting");
+  pinMode(ENA,OUTPUT);//output
+  pinMode(ENB,OUTPUT);
+  pinMode(IN1,OUTPUT);
+  pinMode(IN2,OUTPUT);
+  pinMode(IN3,OUTPUT);
+  pinMode(IN4,OUTPUT);
+  digitalWrite(ENA,LOW);
+  digitalWrite(ENB,LOW);//stop driving
+  digitalWrite(IN1,LOW); 
+  digitalWrite(IN2,HIGH);//setting motor1's directon
+  digitalWrite(IN3,HIGH);
+  digitalWrite(IN4,LOW);//setting motor2's directon
 }
 
 // loop: Runs constantly
@@ -122,17 +151,46 @@ void loop()
       rspeed = 0;
   }
   
-  // Write Motor Values
-  // Insert later KEYWORD
-  
   // Print Left
-  if(ldirection = LREV) { Serial.print("Left Reverse "); }
-  else { Serial.print("Left Forward "); }
+  if(ldirection = LREV) { 
+    Serial.print("Left Reverse "); 
+    digitalWrite(IN1,HIGH); 
+    digitalWrite(IN2,LOW);
+  }
+  else { 
+    Serial.print("Left Forward "); 
+    digitalWrite(IN1,LOW); 
+    digitalWrite(IN2,HIGH);
+  }
+  if(CFG == 1) {
+    Serial.print(" ACTIVE ");
+    analogWrite(ENA,rspeed);
+  } 
+  else {
+    Serial.print(" NOT ACTIVE ");
+    analogWrite(ENA,0);
+  }
   Serial.println(lspeed);
   
   // Print Right
-  if(rdirection = RREV) { Serial.print("Right Reverse "); }
-  else { Serial.print("Right Forward "); }
+  if(rdirection = RREV) { 
+    Serial.print("Right Reverse "); 
+    digitalWrite(IN3,LOW);
+    digitalWrite(IN4,HIGH);
+  }
+  else { 
+    Serial.print("Right Forward "); 
+    digitalWrite(IN3,HIGH);
+    digitalWrite(IN4,LOW);
+  }
+  if(CFG == 1) {
+    Serial.print(" ACTIVE ");
+    analogWrite(ENB,rspeed);
+  } 
+  else {
+    Serial.print(" NOT ACTIVE ");
+    analogWrite(ENB,0);
+  }
   Serial.println(rspeed);
   
   // Wait
