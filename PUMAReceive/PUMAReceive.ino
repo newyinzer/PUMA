@@ -1,3 +1,8 @@
+#include <RF24.h>
+#include <RF24_config.h>
+#include <nRF24L01.h>
+#include <printf.h>
+
 /* 
 PUMAcore.ino
 
@@ -18,12 +23,13 @@ Connections:
 
 // Libraries
 #include <SPI.h>
-#include <nRF24L01.h>
+//#include <nRF24L01.h>
 #include <RF24.h>
+#include <printf.h>
 
 // Constants
-#define CE_PIN   9
-#define CSN_PIN 10
+#define CE_PIN 7
+#define CSN_PIN 8
 #define LFWD 0
 #define LREV 1
 #define RFWD 0
@@ -37,43 +43,61 @@ int lspeed;
 int rspeed;
 
 // Pipes
-const uint64_t pipe = 0xF0F0F0F0E1LL; // Define the transmit pipe
+const uint64_t pipe_t = 0xF0F0F0F0D2LL; // Define the transmit pipe
+const uint64_t pipe_r = 0xF0F0F0F0E1LL; // define the receive pipe
 
 // Radio
 RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 
+// end
+bool done;
+int i;
+
 // Joystick Values
-int joystick[4];  // 4 element array holding Joystick readings
+byte joystick[4];  // 4 element array holding Joystick readings
 
 // setup: Sets up system
 void setup()
 {
-  Serial.begin(9600);
-  delay(1000);
+  Serial.begin(57600);
+  delay(2000);
+  printf_begin();
   Serial.println("Nrf24L01 Receiver Starting");
-  radio.begin();
-  radio.openReadingPipe(1,pipe);
+  done = radio.begin();
+  Serial.println("");
+  radio.enableDynamicPayloads();
+  radio.setRetries(5,15);
+  radio.printDetails();
+  radio.openWritingPipe(pipe_t);
+  radio.openReadingPipe(1,pipe_r);
+  radio.printDetails();
   radio.startListening();
   ldirection = LFWD;
   rdirection = RFWD;
   lspeed = 0;
   rspeed = 0;
+  i = 0;
 }
 
 // loop: Runs constantly
 void loop()
 {
+  
   if ( radio.available() )
   {
     Serial.println("Radio Available");
     // Read the data payload until we've received everything
-    bool done = false;
-    while (!done)
+    done = false;
+    while (radio.available())
     {
       // Fetch the data payload
-      done = radio.read( joystick, sizeof(joystick) );
+      radio.read( joystick, sizeof(joystick) );
+      
       Serial.print("L = ");
+      
+      
       Serial.print(joystick[0]);
+      
       Serial.print(" R = ");      
       Serial.print(joystick[1]);
       Serial.print(" Special2 = ");      
@@ -113,5 +137,5 @@ void loop()
   Serial.println(rspeed);
   
   // Wait
-  delay(100);
+  delay(1000);
 }
