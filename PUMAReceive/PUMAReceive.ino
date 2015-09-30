@@ -1,8 +1,3 @@
-#include <RF24.h>
-#include <RF24_config.h>
-#include <nRF24L01.h>
-#include <printf.h>
-
 /* 
 PUMAcore.ino
 
@@ -13,8 +8,8 @@ This is primarily to test radio functionality. Motor functionality will be added
 Connections:
 1 - GND
 2 - VCC 3.3V !!! NOT 5V
-3 - CE to Arduino pin 9
-4 - CSN to Arduino pin 10
+3 - CE to Arduino pin 7
+4 - CSN to Arduino pin 8
 5 - SCK to Arduino pin 13
 6 - MOSI to Arduino pin 11
 7 - MISO to Arduino pin 12
@@ -23,8 +18,9 @@ Connections:
 
 // Libraries
 #include <SPI.h>
-//#include <nRF24L01.h>
 #include <RF24.h>
+#include <RF24_config.h>
+#include <nRF24L01.h>
 #include <printf.h>
 
 // Constants
@@ -125,6 +121,9 @@ void loop()
       lspeed = 0;
       rspeed = 0;
   }
+  
+  // Write Motor Values
+  // Insert later KEYWORD
   
   // Print Left
   if(ldirection = LREV) { Serial.print("Left Reverse "); }
