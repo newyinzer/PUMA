@@ -30,7 +30,7 @@ Connections:
 #define LREV 1
 #define RFWD 0
 #define RREV 1
-#define SCALING 7
+#define SCALING 0
 
 // Variables
 int ldirection;
@@ -136,5 +136,5 @@ void loop()
   Serial.println(rspeed);
   
   // Wait
-  delay(1000);
+  delay(100);
 }
