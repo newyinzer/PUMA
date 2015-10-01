@@ -34,6 +34,7 @@ Radio Connections:
 #define IN4 9 // Connected to Arduino's port 9
 
 // Constants
+#define TIMEOUT 5
 #define LFWD 0
 #define LREV 1
 #define RFWD 0
@@ -111,6 +112,7 @@ void loop()
   if ( radio.available() )
   {
     Serial.println("Radio Available");
+    i = 0;
     // Read the data payload until we've received everything
     done = false;
     while (radio.available())
@@ -149,12 +151,23 @@ void loop()
     }
   }
   else
-  {    
-      Serial.println("NO Radio Available");
+  {   
+    if(i >= TIMEOUT) {
+      // If we hit the timeout, stop moving
       ldirection = LFWD;
       rdirection = RFWD;
       lspeed = 0;
       rspeed = 0;
+      i = TIMEOUT;
+    }
+    else {
+      // Maintain current speed and direction for the time being
+      ldirection = ldirection;
+      rdirection = rdirection;
+      lspeed = lspeed;
+      rspeed = rspeed;
+      i = i + 1;
+    }
   }
   
   // Print Left
@@ -200,5 +213,5 @@ void loop()
   Serial.println(rspeed);
   
   // Wait
-  delay(1000);
+  delay(100);
 }
