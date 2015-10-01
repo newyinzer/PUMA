@@ -65,7 +65,7 @@ try:
 	string_payload = "".join(map(chr,send_payload))
         setval = radio.write(string_payload[:payload_size])
 	print 'writing result ',setval
-        time.sleep(1)
+        time.sleep(0.1)
 	
 except KeyboardInterrupt:
     j.quit()
