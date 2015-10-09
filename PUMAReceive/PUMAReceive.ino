@@ -73,15 +73,11 @@ void setup()
   printf_begin();
   
   // Start Radio
-  Serial.println("Nrf24L01 Receiver Starting");
   done = radio.begin();
-  Serial.println("");
   radio.enableDynamicPayloads();
   radio.setRetries(5,15);
-  radio.printDetails();
   radio.openWritingPipe(pipe_t);
   radio.openReadingPipe(1,pipe_r);
-  radio.printDetails();
   radio.startListening();
   ldirection = LFWD;
   rdirection = RFWD;
@@ -90,7 +86,6 @@ void setup()
   i = 0;
   
   // Start Motors
-  Serial.println("Motor System Starting");
   pinMode(ENA,OUTPUT);//output
   pinMode(ENB,OUTPUT);
   pinMode(IN1,OUTPUT);
