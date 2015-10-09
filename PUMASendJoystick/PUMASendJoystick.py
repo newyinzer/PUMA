@@ -46,16 +46,19 @@ try:
     while True:
     	print 'Fetching pygame axis values'
         pygame.event.pump()
+        
 	axis_val = j.get_axis(1)
 	axis_val = axis_val * -127.0
 	axis_l = int(axis_val)
 	print 'L = %i' % axis_l
 	send_payload[0] = axis_l & 0xFF
+	
 	axis_val = j.get_axis(3)
 	axis_val = axis_val * -127.0
 	axis_r = int(axis_val)
 	print 'R = %i' % axis_r
 	send_payload[1] = axis_r & 0xFF
+	
 	print 'Axis values are L = %i R = %i' % (send_payload[0],send_payload[1])
 	
 	# The payload will always be the same
