@@ -1,8 +1,8 @@
 /* 
-PUMAcore.ino
+PUMASend.ino
 
 Description:
-PUMA receives two joystick values from Pi and sends what it gets back on the monitor.
+Control module sends two joystick values to the PUMA.
 This is primarily to test radio functionality. Motor functionality will be added later.
 
 Radio Connections:
@@ -26,12 +26,8 @@ Radio Connections:
 // Pin Assignments
 #define CE_PIN 7 // Radio
 #define CSN_PIN 8 // Radio
-#define ENA 5 // Connected to Arduino's port 5(output pwm)
-#define IN1 2 // Connected to Arduino's port 2
-#define IN2 3 // Connected to Arduino's port 3
-#define ENB 6 // Connected to Arduino's port 6(output pwm)
-#define IN3 4 // Connected to Arduino's port 4
-#define IN4 9 // Connected to Arduino's port 9
+#define INL 14 // Connected to left joystick
+#define INR 15 // Connected to right joystick
 
 // Constants
 #define TIMEOUT 5
@@ -43,24 +39,30 @@ Radio Connections:
 #define CFG 1 // Activate motor out
 
 // Variables
-int ldirection;
-int rdirection;
-byte lspeed;
-byte rspeed;
+int lval;
+int rval;
 
 // Pipes
-const uint64_t pipe_t = 0xF0F0F0F0D2LL; // Define the transmit pipe
-const uint64_t pipe_r = 0xF0F0F0F0E1LL; // define the receive pipe
+const uint64_t pipe_r = 0xF0F0F0F0D2LL; // Define the receive pipe
+const uint64_t pipe_t = 0xF0F0F0F0E1LL; // define the transmit pipe
 
 // Radio
 RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 
 // end
 bool done;
-int i;
 
 // Joystick Values
 byte joystick[4];  // 4 element array holding Joystick readings
+
+byte processJoystick(int val) {
+  byte output = 0;
+  int outint = val;
+  outint = outint - 512;
+  outint = outint / 4;
+  output = (byte) outint;
+  return output;
+}
 
 // setup: Sets up system
 void setup()
@@ -79,31 +81,31 @@ void setup()
   radio.openWritingPipe(pipe_t);
   radio.openReadingPipe(1,pipe_r);
   radio.startListening();
-  ldirection = LFWD;
-  rdirection = RFWD;
-  lspeed = 0;
-  rspeed = 0;
-  i = 0;
   
-  // Start Motors
-  pinMode(ENA,OUTPUT);//output
-  pinMode(ENB,OUTPUT);
-  pinMode(IN1,OUTPUT);
-  pinMode(IN2,OUTPUT);
-  pinMode(IN3,OUTPUT);
-  pinMode(IN4,OUTPUT);
-  digitalWrite(ENA,LOW);
-  digitalWrite(ENB,LOW);//stop driving
-  digitalWrite(IN1,LOW); 
-  digitalWrite(IN2,HIGH);//setting motor1's directon
-  digitalWrite(IN3,HIGH);
-  digitalWrite(IN4,LOW);//setting motor2's directon
+  // Initialize variables
+  lval = 0;
+  rval = 0;
+  joystick[0] = 0;
+  joystick[1] = 0;
+  joystick[2] = 0;
+  joystick[3] = 0;
+  
+  // Start Joysticks
+  pinMode(INL,INPUT);
+  pinMode(INR,INPUT);
 }
 
 // loop: Runs constantly
 void loop()
 {
-  
+  // Read Joystick Values
+  lval = analogRead(INL);
+  rval = analogRead(INR);
+  joystick[0] = processJoystick(lval);
+  joystick[1] = processJoystick(rval);
+  joystick[2] = 0;
+  joystick[3] = 0;
+  /*
   if ( radio.available() )
   {
     Serial.println("Radio Available");
@@ -206,7 +208,7 @@ void loop()
     analogWrite(ENB,0);
   }
   Serial.println(rspeed);
-  
+  */
   // Wait
   delay(100);
 }
