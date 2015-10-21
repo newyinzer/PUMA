@@ -105,6 +105,14 @@ void loop()
   joystick[1] = processJoystick(rval);
   joystick[2] = 0;
   joystick[3] = 0;
+  
+  // Send Joystick Values
+  radio.stopListening();
+  printf("Now Sending Left = %d Right = %d",joystick[0],joystick[1]);
+  done = radio.write(&joystick, 4);
+  if (done) { printf("SUCCESS"); }
+  else { printf("FAILURE"); }
+  radio.startListening();
   /*
   if ( radio.available() )
   {
