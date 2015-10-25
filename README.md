@@ -1,6 +1,10 @@
 # PUMA
 Arduino-Raspberry Pi Development Project
 
+Servo Trial:
+
+http://playground.arduino.cc/Learning/SingleServoExample
+
 Motor Shield:
 
 https://github.com/adafruit/Adafruit-Motor-Shield-library
