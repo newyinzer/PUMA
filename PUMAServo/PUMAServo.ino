@@ -50,8 +50,14 @@ void loop() {
   servo1.write(80);
   delay(1000);
   */
-  servo1.write(20);
-  delay(3000);
-  servo1.write(110);
-  delay(3000);
+  for(int i = 0; i <= 180; i++) {
+    if(i % 2 == 0) {
+      servo1.write(102);
+    }
+    else { // 94 to stop
+      servo1.write(86);
+    }
+    delay(3000);
+    Serial.println(i);
+  }
 }
