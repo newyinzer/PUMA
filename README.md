@@ -11,6 +11,27 @@ Test code for receiving joystick values for Raspberry Pi, not important
 ### PUMAMotorProveout
 Test code to ensure that motors run correctly, not important
 
+### PUMAMotorProveout2
+More test code to ensure that motors run correctly, not important
+
+### PUMAReceive
+Arduino code responsible for managing motor 1 and motor 2, important
+
+### PUMASend
+Raspberry Pi code responsible for testing send capability, not important
+
+### PUMASend2
+Arduino code responsible for testing send capability from an Arduino, untested, important
+
+### PUMASendJoystick
+Raspberry Pi code responsible for sending joystick commands, important
+
+### PUMAServo
+Arduino code responsible for testing the cannon mount servo, important
+
+### PUMAcore
+Arduino code responsible for receiving joystick commands as a test, not important
+
 ## Links
 
 ### Servo Trial: 
