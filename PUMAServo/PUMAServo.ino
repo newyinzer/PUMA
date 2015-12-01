@@ -1,3 +1,5 @@
+// for continuous rotation
+
 #include <Servo.h>
 
 Servo servo1; 
