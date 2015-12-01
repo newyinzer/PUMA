@@ -2,6 +2,15 @@
 
 ## Folder Details
 
+### GettingStarted
+Example code for Arduino and RF24 module, not important
+
+### PUMAJoystick
+Test code for receiving joystick values for Raspberry Pi, not important
+
+### PUMAMotorProveout
+Test code to ensure that motors run correctly, not important
+
 ## Links
 
 ### Servo Trial: 
@@ -46,8 +55,13 @@ http://playground.arduino.cc/InterfacingWithHardware/Nrf24L01
 7 = IN4 (Motor Shield, motor2, fwd)
 
 8 = NDATA (No Data LED)
+
 9 = CE (Transceiver, 3)
+
 10 = CSN (Transceiver, 4)
+
 11 = MOSI (Transceiver, 6)
+
 12 = MISO (Transceiver, 7)
+
 13 = SCK (Transceiver, 5)
