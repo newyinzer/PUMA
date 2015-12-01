@@ -1,7 +1,14 @@
+// For 180 degree servo
+
 #include <Servo.h>
 
 Servo servo1; 
+int servopos;
 
+#define SERVOFWD 7 // Servo Forward
+#define SERVOREV 8 // Servo Reverse
+#define SERVOSTP 9 // Servo Stop
+#define SERVORST 10 // Servo Reset to 90
 
 void setup() {
 
@@ -9,55 +16,61 @@ void setup() {
   servo1.attach(9); //analog pin 0
   Serial.begin(19200);
   Serial.println("Ready");
+  servopos = 90;
+}
 
+void writeservo(int dir) {
+  if(dir == SERVOFWD) {
+    if(servopos >= 179) {
+      servopos = 179;
+    }
+    else {
+      servopos++;
+    }
+  }
+  else if(dir == SERVOREV) {
+    if(servopos <= 0) {
+      servopos = 0;
+    }
+    else {
+      servopos--;
+    }
+  }
+  else if(dir == SERVOSTP) {
+    servopos = servopos;
+  }
+  else if(dir == SERVORST) {
+    servopos = 90;
+  }
+  else {
+    servopos = servopos;
+  }
+  servo1.write(servopos);
+  delay(1000);
 }
 
 void loop() {
-
-  static int v = 0;
-/*
-  if ( Serial.available()) {
-    char ch = Serial.read();
-
-    switch(ch) {
-      case '0'...'9':
-        v = v * 10 + ch - '0';
-        break;
-      case 's':
-        servo1.write(v);
-        v = 0;
-        break;
-    }
+  int i;
+  Serial.println("Forward");
+  for(i = 0; i <= 100; i++) {
+    writeservo(SERVOFWD);
   }
-*/
-  //servo1.write(0);
-  //delay(1000);
-  /*
-  servo1.write(10);
-  delay(1000);
-  servo1.write(20);
-  delay(1000);
-  servo1.write(30);
-  delay(1000);
-  servo1.write(40);
-  delay(1000);
-  servo1.write(50);
-  delay(1000);
-  servo1.write(60);
-  delay(1000);
-  servo1.write(70);
-  delay(1000);
-  servo1.write(80);
-  delay(1000);
-  */
-  for(int i = 0; i <= 180; i++) {
-    if(i % 2 == 0) {
-      servo1.write(102);
-    }
-    else { // 94 to stop
-      servo1.write(86);
-    }
-    delay(3000);
-    Serial.println(i);
+  Serial.println("Stop");
+  for(i = 0; i <= 10; i++) {
+    writeservo(SERVOSTP);
   }
+  Serial.println("Backward");
+  for(i = 0; i <= 190; i++) {
+    writeservo(SERVOREV);
+  }
+  Serial.println("Stop Again");
+  for(i = 0; i <= 10; i++) {
+    writeservo(SERVOSTP);
+  }
+  Serial.println("Forward Again");
+  for(i = 0; i <= 190; i++) {
+    writeservo(SERVOFWD);
+  }
+  Serial.println("Reset");
+  writeservo(SERVORST);
 }
