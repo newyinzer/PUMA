@@ -1,36 +1,29 @@
-# PUMA
-Arduino-Raspberry Pi Development Project
+# PUMA: Arduino-Raspberry Pi Development Project
+
+## Folder Details
 
 ## Links
-Servo Trial:
 
+### Servo Trial: 
 http://playground.arduino.cc/Learning/SingleServoExample
 
-Motor Shield:
-
+### Motor Shield:
 https://github.com/adafruit/Adafruit-Motor-Shield-library
-
 https://learn.adafruit.com/arduino-tips-tricks-and-techniques/arduino-libraries
-
 http://osepp.com/products/shield-arduino-compatible/motor-servo-shield/
 
-New Motor Shield:
-
+### New Motor Shield:
 http://osepp.com/products/sensors-arduino-compatible/motor-driver/
 
-Transceiver:
-
+### Transceiver:
 https://www.arduino.cc/en/Reference/SPI
-
 https://github.com/edoardoo/RF24
-
 http://hack.lenotta.com/arduino-raspberry-pi-switching-light-with-nrf24l01/
-
 http://www.addicore.com/2pcs-Addicore-nRF24L01-Wireless-Transceiver-p/112.htm
-
 http://playground.arduino.cc/InterfacingWithHardware/Nrf24L01
 
-Arduino Pin Assignments:
+## Arduino Pin Assignments:
+
 2 = IN1 (Motor Shield, motor1, rev)
 3 = IN2 (Motor Shield, motor1, fwd)
 4 = IN3 (Motor Shield, motor2, rev)
