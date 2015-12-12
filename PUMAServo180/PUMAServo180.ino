@@ -16,13 +16,13 @@ void setup() {
   servo1.attach(9); //analog pin 0
   Serial.begin(19200);
   Serial.println("Ready");
-  servopos = 90;
+  servopos = 70;
 }
 
 void writeservo(int dir) {
   if(dir == SERVOFWD) {
-    if(servopos >= 179) {
-      servopos = 179;
+    if(servopos >= 160) {
+      servopos = 160;
     }
     else {
       servopos++;
@@ -40,19 +40,20 @@ void writeservo(int dir) {
     servopos = servopos;
   }
   else if(dir == SERVORST) {
-    servopos = 90;
+    servopos = 70;
   }
   else {
     servopos = servopos;
   }
   servo1.write(servopos);
-  delay(1000);
+  Serial.println(servopos);
+  delay(100);
 }
 
 void loop() {
   int i;
   Serial.println("Forward");
-  for(i = 0; i <= 100; i++) {
+  for(i = 0; i <= 80; i++) {
     writeservo(SERVOFWD);
   }
   Serial.println("Stop");
@@ -60,7 +61,7 @@ void loop() {
     writeservo(SERVOSTP);
   }
   Serial.println("Backward");
-  for(i = 0; i <= 190; i++) {
+  for(i = 0; i <= 170; i++) {
     writeservo(SERVOREV);
   }
   Serial.println("Stop Again");
@@ -68,7 +69,7 @@ void loop() {
     writeservo(SERVOSTP);
   }
   Serial.println("Forward Again");
-  for(i = 0; i <= 190; i++) {
+  for(i = 0; i <= 170; i++) {
     writeservo(SERVOFWD);
   }
   Serial.println("Reset");
