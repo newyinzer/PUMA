@@ -86,3 +86,5 @@ http://playground.arduino.cc/InterfacingWithHardware/Nrf24L01
 12 = MISO (Transceiver, 7)
 
 13 = SCK (Transceiver, 5)
+
+### Retest Okay
