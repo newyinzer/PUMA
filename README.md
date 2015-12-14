@@ -21,13 +21,16 @@ Arduino code responsible for managing motor 1 and motor 2, important
 Raspberry Pi code responsible for testing send capability, not important
 
 ### PUMASend2
-Arduino code responsible for testing send capability from an Arduino, untested, important
+Arduino code responsible for testing send capability from an Arduino, need to retest, important
 
 ### PUMASendJoystick
 Raspberry Pi code responsible for sending joystick commands, important
 
 ### PUMAServo
 Arduino code responsible for testing the cannon mount servo, important
+
+### PUMAServo180
+Arduino code responsible for testing 180 degree cannon mount servo, important
 
 ### PUMAcore
 Arduino code responsible for receiving joystick commands as a test, not important
@@ -86,5 +89,3 @@ http://playground.arduino.cc/InterfacingWithHardware/Nrf24L01
 12 = MISO (Transceiver, 7)
 
 13 = SCK (Transceiver, 5)
-
-### Retest Okay
