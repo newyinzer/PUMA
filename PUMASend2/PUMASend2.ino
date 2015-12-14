@@ -1,5 +1,5 @@
 /* 
-PUMASend.ino
+PUMASend2.ino
 
 Description:
 Control module sends two joystick values to the PUMA.
@@ -14,6 +14,16 @@ Radio Connections:
 6 - MOSI to Arduino pin 11
 7 - MISO to Arduino pin 12
 8 - UNUSED
+
+Turret Data:
+0 - Turn turret clockwise
+1 - Turn turret counter clockwise
+2 - Turret move up
+3 - Turret move down
+4 - Fire
+5 - Unused
+6 - Unused
+7 - Unused
 */
 
 // Libraries
@@ -24,19 +34,19 @@ Radio Connections:
 #include <printf.h>
 
 // Pin Assignments
-#define CE_PIN 7 // Radio
-#define CSN_PIN 8 // Radio
-#define SCK_PIN 13 // Radio
-#define MOSI_PIN 11 // Radio
-#define MISO_PIN 12 // Radio
-#define INL 14 // Connected to left joystick, a0
-#define INR 15 // Connected to right joystick, a1
-#define CCW_PIN 9 // Connected to counter clockwise input
-#define CW_PIN 10 // Connected to clockwise input
+#define ERR_PIN 3 // Turn on if message not sent
+#define FIRE_PIN 4 // Connected to turret fire
 #define UP_PIN 5 // Connected to turret up
 #define DN_PIN 6 // Connected to turret down
-#define FIRE_PIN 4 // Connected to turret fire
-#define ERR_PIN 3 // Turn on if message not sent
+#define CE_PIN 7 // Radio
+#define CSN_PIN 8 // Radio
+#define CCW_PIN 9 // Connected to counter clockwise input
+#define CW_PIN 10 // Connected to clockwise input
+#define MOSI_PIN 11 // Radio
+#define MISO_PIN 12 // Radio
+#define SCK_PIN 13 // Radio
+#define INL 14 // Connected to left joystick, a0
+#define INR 15 // Connected to right joystick, a1
 
 // Constants
 #define TIMEOUT 5
@@ -53,7 +63,6 @@ Radio Connections:
 // Variables
 int lval;
 int rval;
-int tval;
 
 // Pipes
 const uint64_t pipe_r = 0xF0F0F0F0D2LL; // Define the receive pipe
@@ -124,7 +133,6 @@ void setup()
   // Initialize variables
   lval = 0;
   rval = 0;
-  tval = 0;
   joystick[0] = 0;
   joystick[1] = 0;
   joystick[2] = 0;
@@ -162,8 +170,7 @@ void loop()
   
   // Send Joystick Values
   radio.stopListening();
-  printf("Now Sending Left = %d Right = %d Turret = %d\n",joystick[0],joystick[1],joystick[2]);
-  
+  printf("Now Sending Left = %d Right = %d Turret = %d Other = %d Status = ",joystick[0],joystick[1],joystick[2],joystick[3]);
   done = radio.write(&joystick, 4);
   if (done) { 
     printf("SUCCESS\n"); 
@@ -173,7 +180,6 @@ void loop()
     printf("FAILURE\n"); 
     digitalWrite(ERR_PIN,HIGH);
   }
-  
   radio.startListening();
 
   // Wait
