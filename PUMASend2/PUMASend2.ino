@@ -33,6 +33,10 @@ Radio Connections:
 #define INR 15 // Connected to right joystick, a1
 #define CCW_PIN 9 // Connected to counter clockwise input
 #define CW_PIN 10 // Connected to clockwise input
+#define UP_PIN 5 // Connected to turret up
+#define DN_PIN 6 // Connected to turret down
+#define FIRE_PIN 4 // Connected to turret fire
+#define ERR_PIN 3 // Turn on if message not sent
 
 // Constants
 #define TIMEOUT 5
@@ -63,6 +67,19 @@ bool done;
 
 // Joystick Values
 byte joystick[4];  // 4 element array holding Joystick readings
+
+byte processTurret() {
+  byte output = 0;
+    
+  // Read Turret Values
+  if(digitalRead(CW_PIN) == HIGH) { output = output | 0x01; }
+  if(digitalRead(CCW_PIN) == HIGH) { output = output | 0x02; }
+  if(digitalRead(UP_PIN) == HIGH) { output = output | 0x04; }
+  if(digitalRead(DN_PIN) == HIGH) { output = output | 0x08; }
+  if(digitalRead(FIRE_PIN) == HIGH) { output = output | 0x10; }
+  
+  return output;
+}
 
 byte processJoystick(int val) {
   byte output = 0;
@@ -107,7 +124,7 @@ void setup()
   // Initialize variables
   lval = 0;
   rval = 0;
-  tval = TSTOP;
+  tval = 0;
   joystick[0] = 0;
   joystick[1] = 0;
   joystick[2] = 0;
@@ -120,6 +137,13 @@ void setup()
   // Start Cannon Rotation
   pinMode(CW_PIN,INPUT);
   pinMode(CCW_PIN,INPUT);
+  pinMode(UP_PIN,INPUT);
+  pinMode(DN_PIN,INPUT);
+  pinMode(FIRE_PIN,INPUT);
+  
+  // Set up error output
+  pinMode(ERR_PIN,OUTPUT);
+  digitalWrite(ERR_PIN,HIGH);
 }
 
 // loop: Runs constantly
@@ -129,16 +153,11 @@ void loop()
   lval = analogRead(INL);
   rval = analogRead(INR);
   printf("Left = %d Right = %d\n",lval,rval);
-  
-  // Read Turret Values
-  if(digitalRead(CCW_PIN) == HIGH) { tval = TCCW; }
-  else if(digitalRead(CW_PIN) == HIGH) { tval = TCW; }
-  else { tval = TSTOP; }
-  
+
   // Set up message
   joystick[0] = processJoystick(lval);
   joystick[1] = processJoystick(rval);
-  joystick[2] = tval;
+  joystick[2] = processTurret();
   joystick[3] = 0;
   
   // Send Joystick Values
@@ -146,8 +165,14 @@ void loop()
   printf("Now Sending Left = %d Right = %d Turret = %d\n",joystick[0],joystick[1],joystick[2]);
   
   done = radio.write(&joystick, 4);
-  if (done) { printf("SUCCESS\n"); }
-  else { printf("FAILURE\n"); }
+  if (done) { 
+    printf("SUCCESS\n"); 
+    digitalWrite(ERR_PIN,LOW);
+  }
+  else { 
+    printf("FAILURE\n"); 
+    digitalWrite(ERR_PIN,HIGH);
+  }
   
   radio.startListening();
 
