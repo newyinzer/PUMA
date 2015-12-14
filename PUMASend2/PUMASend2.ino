@@ -26,8 +26,13 @@ Radio Connections:
 // Pin Assignments
 #define CE_PIN 7 // Radio
 #define CSN_PIN 8 // Radio
-#define INL 14 // Connected to left joystick
-#define INR 15 // Connected to right joystick
+#define SCK_PIN 13 // Radio
+#define MOSI_PIN 11 // Radio
+#define MISO_PIN 12 // Radio
+#define INL 14 // Connected to left joystick, a0
+#define INR 15 // Connected to right joystick, a1
+#define CCW_PIN 9 // Connected to counter clockwise input
+#define CW_PIN 10 // Connected to clockwise input
 
 // Constants
 #define TIMEOUT 5
@@ -37,10 +42,14 @@ Radio Connections:
 #define RREV 1
 #define SCALING 0
 #define CFG 1 // Activate motor out
+#define TSTOP 0 // Turret stop
+#define TCW 1 // Turret clockwise
+#define TCCW 2 // Turret counterclockwise
 
 // Variables
 int lval;
 int rval;
+int tval;
 
 // Pipes
 const uint64_t pipe_r = 0xF0F0F0F0D2LL; // Define the receive pipe
@@ -98,6 +107,7 @@ void setup()
   // Initialize variables
   lval = 0;
   rval = 0;
+  tval = TSTOP;
   joystick[0] = 0;
   joystick[1] = 0;
   joystick[2] = 0;
@@ -106,6 +116,10 @@ void setup()
   // Start Joysticks
   pinMode(INL,INPUT);
   pinMode(INR,INPUT);
+  
+  // Start Cannon Rotation
+  pinMode(CW_PIN,INPUT);
+  pinMode(CCW_PIN,INPUT);
 }
 
 // loop: Runs constantly
@@ -115,14 +129,21 @@ void loop()
   lval = analogRead(INL);
   rval = analogRead(INR);
   printf("Left = %d Right = %d\n",lval,rval);
+  
+  // Read Turret Values
+  if(digitalRead(CCW_PIN) == HIGH) { tval = TCCW; }
+  else if(digitalRead(CW_PIN) == HIGH) { tval = TCW; }
+  else { tval = TSTOP; }
+  
+  // Set up message
   joystick[0] = processJoystick(lval);
   joystick[1] = processJoystick(rval);
-  joystick[2] = 0;
+  joystick[2] = tval;
   joystick[3] = 0;
   
   // Send Joystick Values
   radio.stopListening();
-  printf("Now Sending Left = %d Right = %d\n",joystick[0],joystick[1]);
+  printf("Now Sending Left = %d Right = %d Turret = %d\n",joystick[0],joystick[1],joystick[2]);
   
   done = radio.write(&joystick, 4);
   if (done) { printf("SUCCESS\n"); }
