@@ -26,8 +26,8 @@ Radio Connections:
 // Pin Assignments
 #define CE_PIN 7 // Radio
 #define CSN_PIN 8 // Radio
-#define INL 23 // Connected to left joystick
-#define INR 24 // Connected to right joystick
+#define INL 14 // Connected to left joystick
+#define INR 15 // Connected to right joystick
 
 // Constants
 #define TIMEOUT 5
@@ -73,8 +73,6 @@ byte processJoystick(int val) {
     outint = 0;
   }
   
-  //outint = outint - 500;
-  //outint = outint / 4;
   output = (byte) outint;
   return output;
 }
@@ -106,16 +104,16 @@ void setup()
   joystick[3] = 0;
   
   // Start Joysticks
-  pinMode(A0,INPUT);
-  pinMode(A1,INPUT);
+  pinMode(INL,INPUT);
+  pinMode(INR,INPUT);
 }
 
 // loop: Runs constantly
 void loop()
 {
   // Read Joystick Values
-  lval = analogRead(A0);
-  rval = analogRead(A1);
+  lval = analogRead(INL);
+  rval = analogRead(INR);
   printf("Left = %d Right = %d\n",lval,rval);
   joystick[0] = processJoystick(lval);
   joystick[1] = processJoystick(rval);
