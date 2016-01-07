@@ -35,10 +35,8 @@ Radio Connections:
 
 // Constants
 #define TIMEOUT 5
-#define LFWD 0
-#define LREV 1
-#define RFWD 0
-#define RREV 1
+#define FWD 0
+#define REV 1
 #define SCALING 0
 #define CFG 1 // Activate motor out
 
@@ -62,6 +60,22 @@ int i;
 // Joystick Values
 byte joystick[4];  // 4 element array holding Joystick readings
 
+// getSpeed: Gets the speed from a joystick value
+int getSpeed(byte joystickval) {
+  int speed = joystickval & B111;
+  speed = speed << 5;
+  return speed;
+}
+
+// getDirection: Gets the direction from a joystick value
+int getDirection(byte joystickval) {
+  int direction = joystickval;
+  direction = direction >> 3;
+  if(direction == 0) { direction = REV; }
+  else { direction = FWD; }
+  return direction;
+}
+
 // setup: Sets up system
 void setup()
 {
@@ -79,8 +93,8 @@ void setup()
   radio.openWritingPipe(pipe_t);
   radio.openReadingPipe(1,pipe_r);
   radio.startListening();
-  ldirection = LFWD;
-  rdirection = RFWD;
+  ldirection = FWD;
+  rdirection = FWD;
   lspeed = 0;
   rspeed = 0;
   i = 0;
@@ -128,29 +142,36 @@ void loop()
       Serial.println(joystick[3]);
     }
     
+    ldirection = getDirection(joystick[0]);
+    lspeed = getSpeed(joystick[0]);
+    rdirection = getDirection(joystick[1]);
+    rspeed = getSpeed(joystick[1]);
+    
+    /*
     if(joystick[0] > 127) { 
-      ldirection = LREV; 
+      ldirection = REV; 
       lspeed = (255 - joystick[0]) << 1;
     }
     else { 
-      ldirection = LFWD; 
+      ldirection = FWD; 
       lspeed = joystick[0] << 1;
     }
     if(joystick[1] > 127) { 
-      rdirection = RREV; 
+      rdirection = REV; 
       rspeed = (255 - joystick[1]) << 1;
     }
     else { 
-      rdirection = RFWD; 
+      rdirection = FWD; 
       rspeed = joystick[1] << 1;
     }
+    */
   }
   else
   {   
     if(i >= TIMEOUT) {
       // If we hit the timeout, stop moving
-      ldirection = LFWD;
-      rdirection = RFWD;
+      ldirection = FWD;
+      rdirection = FWD;
       lspeed = 0;
       rspeed = 0;
       i = TIMEOUT;
@@ -166,7 +187,7 @@ void loop()
   }
   
   // Print Left
-  if(ldirection == LREV) { 
+  if(ldirection == REV) { 
     Serial.print("Left Reverse "); 
     digitalWrite(IN1,LOW); 
     digitalWrite(IN2,HIGH);
@@ -187,7 +208,7 @@ void loop()
   Serial.println(lspeed);
   
   // Print Right
-  if(rdirection == RREV) { 
+  if(rdirection == REV) { 
     Serial.print("Right Reverse "); 
     digitalWrite(IN3,HIGH);
     digitalWrite(IN4,LOW);
