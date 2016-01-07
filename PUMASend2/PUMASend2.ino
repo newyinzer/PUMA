@@ -77,6 +77,30 @@ bool done;
 // Joystick Values
 byte joystick[4];  // 4 element array holding Joystick readings
 
+// Turns the raw joystick values into bytes to send
+byte processJoystick(int turretval) {
+  byte output = B0000;
+  if(turretval >= 959) { output = B1111; }      // Forward 7
+  else if(turretval >= 895) { output = B1110; } // Forward 6
+  else if(turretval >= 831) { output = B1101; } // Forward 5
+  else if(turretval >= 767) { output = B1100; } // Forward 4
+  else if(turretval >= 703) { output = B1011; } // Forward 3
+  else if(turretval >= 639) { output = B1010; } // Forward 2
+  else if(turretval >= 575) { output = B1001; } // Forward 1
+  else if(turretval >= 511) { output = B1000; } // Stop
+  else if(turretval >= 447) { output = B0000; } // Stop
+  else if(turretval >= 383) { output = B0001; } // Reverse 1
+  else if(turretval >= 319) { output = B0010; } // Reverse 2
+  else if(turretval >= 255) { output = B0011; } // Reverse 3
+  else if(turretval >= 191) { output = B0100; } // Reverse 4
+  else if(turretval >= 127) { output = B0101; } // Reverse 5
+  else if(turretval >=  63) { output = B0110; } // Reverse 6
+  else if(turretval >=   0) { output = B0111; } // Reverse 7
+  else { output = B0000; } // Stop
+  return output;
+}
+
+// Reads bits and determines turret commands
 byte processTurret() {
   byte output = 0;
     
@@ -90,6 +114,8 @@ byte processTurret() {
   return output;
 }
 
+/*
+// Original processJoystick function, changing due to new standard
 byte processJoystick(int val) {
   byte output = 0;
   int outint = val;
@@ -111,6 +137,7 @@ byte processJoystick(int val) {
   output = (byte) outint;
   return output;
 }
+*/
 
 // setup: Sets up system
 void setup()
