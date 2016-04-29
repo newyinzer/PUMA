@@ -89,3 +89,17 @@ http://playground.arduino.cc/InterfacingWithHardware/Nrf24L01
 12 = MISO (Transceiver, 7)
 
 13 = SCK (Transceiver, 5)
+
+## Info on Motion Capture (KameraPanzer)
+
+Instructable on RasPi WebCam: http://www.instructables.com/id/Raspberry-Pi-remote-webcam/?ALLSTEPS
+
+How to Write a Daemon: http://www.netzmafia.de/skripten/unix/linux-daemon-howto.html
+
+Intro to Video Surveillance with Motion: http://www.debian-administration.org/article/347/An_Introduction_to_Video_Surveillance_with_'Motion'
+
+Motion Basic Features: http://www.lavrsen.dk/foswiki/bin/view/Motion/MotionGuideBasicFeatures
+
+Operate Linux Spycams: https://www.linux.com/learn/how-operate-linux-spycams-motion
+
+Autostart Processes: http://askubuntu.com/questions/9382/how-can-i-configure-a-service-to-run-at-startup
