@@ -90,7 +90,9 @@ http://playground.arduino.cc/InterfacingWithHardware/Nrf24L01
 
 13 = SCK (Transceiver, 5)
 
-## Info on Motion Capture (KameraPanzer)
+## Motion Capture (KameraPanzer)
+
+### Reference Documents
 
 Instructable on RasPi WebCam: http://www.instructables.com/id/Raspberry-Pi-remote-webcam/?ALLSTEPS
 
@@ -103,3 +105,9 @@ Motion Basic Features: http://www.lavrsen.dk/foswiki/bin/view/Motion/MotionGuide
 Operate Linux Spycams: https://www.linux.com/learn/how-operate-linux-spycams-motion
 
 Autostart Processes: http://askubuntu.com/questions/9382/how-can-i-configure-a-service-to-run-at-startup
+
+### motion.conf Modifications (sudo nano /etc/motion/motion.conf)
+
+webcam_maxrate to 100
+
+output_normal to off
