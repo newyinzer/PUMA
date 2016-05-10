@@ -2,7 +2,7 @@
 
 #include <Servo.h>
 
-#define delay 5000
+#define delay1 5000
 #define CW 97
 #define CCW 92
 
@@ -27,15 +27,17 @@ void loop() {
   
   curtime = millis();
   
-  if(curtime >= (lastime + delay)) {
+  if(curtime >= (lastime + delay1)) {
     if(servospeed == CW) {
-      Serial.println("Switching to CCW");
+      Serial.print("Switching to CCW ");
       servospeed = CCW;
     }
     else {
-      Serial.println("Switching to CW");
+      Serial.print("Switching to CW ");
       servospeed = CW;
     }
+    Serial.print(curtime);
+    Serial.println("");
     lastime = curtime;
   }
   else {
