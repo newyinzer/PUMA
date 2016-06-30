@@ -19,20 +19,6 @@ except NameError:
     # Python 3
     basestring = unicode = str
 
-
-# timedelta.total_seconds() is only in 2.7, so we backport it here for 2.6
-def total_seconds(delta):
-    return (delta.microseconds + (delta.seconds
-        + delta.days * 24 * 3600) * 10**6) / 10**6
-
-
-# Thanks, SO: http://stackoverflow.com/questions/1094841/reusable-library-to-get-human-readable-version-of-file-size
-def sizeof_fmt(num):
-    for unit in ['bytes', 'KB', 'MB', 'GB', 'TB']:
-        if num < 1024.0:
-            return "%3.1f%s" % (num, unit)
-        num /= 1024.0
-
 class Dashboard(object):
     def __init__(self, vehicle):
         vehicle.listen(Measurement, self.receive)
