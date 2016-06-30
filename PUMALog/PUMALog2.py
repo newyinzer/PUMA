@@ -1,4 +1,6 @@
 from openxc.interface import UsbVehicleInterface
+from openxc.measurements import EventedMeasurement, Measurement
+from datetime import datetime
 
 def receive(measurement, **kwargs):
     # this callback will receive each message received as a dict
