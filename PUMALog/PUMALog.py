@@ -35,12 +35,7 @@ def sizeof_fmt(num):
 
 class Dashboard(object):
     def __init__(self, vehicle):
-        #self.window = window
-        self.elements = {}
-        self.scroll_position = 0
-        self.screen_lock = Lock()
         vehicle.listen(Measurement, self.receive)
-
         self.started_time = datetime.now()
         self.messages_received = 0
 
@@ -48,13 +43,17 @@ class Dashboard(object):
         if self.messages_received == 0:
             self.started_time = datetime.now()
         self.messages_received += 1
-        # add to this to update message
-"""
-        if measurement.name not in self.elements:
-            self.elements[measurement.name] = DataPoint(measurement.__class__)
-        self.elements[measurement.name].update(measurement)
-        self._redraw()
-"""
+        
+        if measurement.name == 'steering_wheel_angle':
+            print datetime.now()
+            print ',steering_wheel_angle,'
+            print measurement.value
+            print '\n'
+        elif measurement.name == 'vehicle_speed':
+            print datetime.now()
+            print ',vehicle_speed,'
+            print vehicle_speed
+            print '\n'
 
 def run_dashboard(source_class, source_kwargs):
     vehicle = Vehicle()
@@ -62,7 +61,6 @@ def run_dashboard(source_class, source_kwargs):
     dashboard.source = source_class(**source_kwargs)
     vehicle.add_source(dashboard.source)
     
-
 def parse_options():
     parser = argparse.ArgumentParser(
             description="View a real-time dashboard of all OpenXC measurements",
