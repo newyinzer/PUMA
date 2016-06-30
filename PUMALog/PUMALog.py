@@ -12,6 +12,7 @@ from threading import Lock
 from .common import device_options, configure_logging, select_device
 from openxc.vehicle import Vehicle
 from openxc.measurements import EventedMeasurement, Measurement
+from openxc.interface import UsbVehicleInterface
 
 try:
     unicode
@@ -44,7 +45,8 @@ class Dashboard(object):
 def run_dashboard(source_class, source_kwargs):
     vehicle = Vehicle()
     dashboard = Dashboard(vehicle)
-    dashboard.source = source_class(**source_kwargs)
+    dashboard.source = UsbVehicleInterface(callback=receive)
+    #dashboard.source = source_class(**source_kwargs)
     vehicle.add_source(dashboard.source)
     
 def parse_options():
