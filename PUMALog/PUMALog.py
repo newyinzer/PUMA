@@ -5,7 +5,6 @@ from __future__ import absolute_import
 from __future__ import division
 
 import argparse
-import curses
 import math
 from datetime import datetime
 from threading import Lock
@@ -44,12 +43,7 @@ class Dashboard(object):
 
         self.started_time = datetime.now()
         self.messages_received = 0
-"""
-        curses.use_default_colors()
-        curses.init_pair(1, curses.COLOR_RED, -1)
-        curses.init_pair(2, curses.COLOR_GREEN, -1)
-        curses.init_pair(3, curses.COLOR_YELLOW, -1)
-"""
+
     def receive(self, measurement, **kwargs):
         if self.messages_received == 0:
             self.started_time = datetime.now()
@@ -82,4 +76,3 @@ def main():
     arguments = parse_options()
     source_class, source_kwargs = select_device(arguments)
     run_dashboard(source_class, source_kwargs)
-    #curses.wrapper(run_dashboard, source_class, source_kwargs)
