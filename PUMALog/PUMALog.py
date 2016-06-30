@@ -1,46 +1,6 @@
 # Data Logger for PUMA Project
-# This module is based off of the ``openxc-dump`` command line program.
+# This module is based off of the ``openxc-dashboard`` command line program.
 
-from __future__ import absolute_import
-
-import argparse
-import time
-import logging
-
-from openxc.formats.json import JsonFormatter
-from .common import device_options, configure_logging, select_device
-
-def receive(message, **kwargs):
-    message['timestamp'] = time.time()
-    # This next line needs to be changed
-    print(JsonFormatter.serialize(message))
-    #
-
-def parse_options():
-    parser = argparse.ArgumentParser(
-            description="View a raw OpenXC data stream",
-            parents=[device_options()])
-
-    arguments = parser.parse_args()
-    return arguments
-
-
-def main():
-    configure_logging(logging.DEBUG)
-    arguments = parse_options()
-
-    source_class, source_kwargs = select_device(arguments)
-    source = source_class(callback=receive, **source_kwargs)
-    source.start()
-    # TODO test this, I'd prefer it to the sleep loop
-    source.join()
-
-""" This module contains the methods for the ``openxc-dashboard`` command line
-program.
-
-`main` is executed when ``openxc-dashboard`` is run, and all other callables in
-this module are internal only.
-"""
 from __future__ import absolute_import
 from __future__ import division
 
@@ -73,83 +33,6 @@ def sizeof_fmt(num):
         if num < 1024.0:
             return "%3.1f%s" % (num, unit)
         num /= 1024.0
-
-
-class DataPoint(object):
-    AVERAGE_FREQUENCY_ALPHA = 0.1
-
-    def __init__(self, measurement_type):
-        self.event = ''
-        self.current_data = None
-        self.events = {}
-        self.messages_received = 0
-        self.measurement_type = measurement_type
-        self.min = None
-        self.max = None
-        self.last_update_time = None
-        self.average_time_since_update = None
-
-    def update(self, measurement):
-        self.messages_received += 1
-        self.current_data = measurement
-
-        if self.last_update_time is not None:
-            time_since_update = total_seconds(datetime.now() - self.last_update_time)
-            if self.average_time_since_update is None:
-                self.average_time_since_update = time_since_update
-            else:
-                self.average_time_since_update = ((self.AVERAGE_FREQUENCY_ALPHA *
-                        time_since_update) + (1 - self.AVERAGE_FREQUENCY_ALPHA) *
-                        self.average_time_since_update)
-        self.last_update_time = datetime.now()
-
-        if getattr(self.current_data.value, 'unit', None) == self.current_data.unit:
-            if self.min is None or self.current_data.value < self.min:
-                self.min = self.current_data.value
-            elif self.max is None or self.current_data.value > self.max:
-                self.max = self.current_data.value
-
-        if isinstance(measurement, EventedMeasurement):
-            if measurement.valid_state():
-                self.events[measurement.value] = measurement.event
-
-    def percentage(self):
-        # TODO man, this is getting really ugly to handle all of the different
-        # types
-        percent = None
-        if hasattr(self.measurement_type, 'valid_range'):
-            percent = self.current_data.percentage_within_range()
-        elif (getattr(self, 'min', None) is not None and
-                getattr(self, 'max', None) is not None) and self.min != self.max:
-            percent = (((self.current_data.value - self.min) / float(self.max -
-                    self.min)) * 100).num
-        return percent
-
-    def print_to_window(self, window, row, started_time):
-        width = window.getmaxyx()[1]
-        if self.current_data is not None:
-            if len(self.events) == 0:
-                value = str(self.current_data)
-            else:
-                result = ""
-                for item, value in enumerate(self.measurement_type.states):
-                    # TODO missing keys here?
-                    result += "%s: %s " % (value, self.events.get(value, "?"))
-                value = result
-
-            value_color = curses.color_pair(2)
-            window.addstr(row, 0, "{:>22} %s".format(value), value_color)
-        window.addstr(row, 23, self.current_data.name)
-
-        if width > 60:
-            message_count_color = curses.color_pair(3)
-            window.addstr(row, 50, "Msgs: " + str(self.messages_received),
-                    message_count_color)
-
-        if width > 75 and self.average_time_since_update > 0:
-            window.addstr(row, 61, "Freq. (Hz): %d" %
-                    math.ceil((1 / self.average_time_since_update)))
-
 
 class Dashboard(object):
     def __init__(self, vehicle):
