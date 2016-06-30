@@ -152,8 +152,8 @@ class DataPoint(object):
 
 
 class Dashboard(object):
-    def __init__(self, window, vehicle):
-        self.window = window
+    def __init__(self, vehicle):
+        #self.window = window
         self.elements = {}
         self.scroll_position = 0
         self.screen_lock = Lock()
@@ -161,22 +161,23 @@ class Dashboard(object):
 
         self.started_time = datetime.now()
         self.messages_received = 0
-
+"""
         curses.use_default_colors()
         curses.init_pair(1, curses.COLOR_RED, -1)
         curses.init_pair(2, curses.COLOR_GREEN, -1)
         curses.init_pair(3, curses.COLOR_YELLOW, -1)
-
+"""
     def receive(self, measurement, **kwargs):
         if self.messages_received == 0:
             self.started_time = datetime.now()
         self.messages_received += 1
-
+        # add to this to update message
+"""
         if measurement.name not in self.elements:
             self.elements[measurement.name] = DataPoint(measurement.__class__)
         self.elements[measurement.name].update(measurement)
         self._redraw()
-
+"""
     def _redraw(self):
         self.screen_lock.acquire()
         self.window.erase()
@@ -213,25 +214,12 @@ class Dashboard(object):
         self.screen_lock.release()
 
 
-def run_dashboard(window, source_class, source_kwargs):
+def run_dashboard(source_class, source_kwargs):
     vehicle = Vehicle()
-    dashboard = Dashboard(window, vehicle)
+    dashboard = Dashboard(vehicle)
     dashboard.source = source_class(**source_kwargs)
     vehicle.add_source(dashboard.source)
-
-    window.scrollok(True)
-    while True:
-        c = window.getch()
-        if c == curses.KEY_DOWN:
-            dashboard.scroll_down(1)
-        elif c == curses.KEY_UP:
-            dashboard.scroll_up(1)
-        elif c == curses.KEY_NPAGE:
-            dashboard.scroll_down(25)
-        elif c == curses.KEY_PPAGE:
-            dashboard.scroll_up(25)
-
-
+    
 
 def parse_options():
     parser = argparse.ArgumentParser(
@@ -245,4 +233,5 @@ def main():
     configure_logging()
     arguments = parse_options()
     source_class, source_kwargs = select_device(arguments)
-    curses.wrapper(run_dashboard, source_class, source_kwargs)
+    run_dashboard(source_class, source_kwargs)
+    #curses.wrapper(run_dashboard, source_class, source_kwargs)
