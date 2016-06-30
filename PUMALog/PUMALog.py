@@ -61,41 +61,6 @@ class Dashboard(object):
         self.elements[measurement.name].update(measurement)
         self._redraw()
 """
-    def _redraw(self):
-        self.screen_lock.acquire()
-        self.window.erase()
-        max_rows = self.window.getmaxyx()[0] - 4
-        for row, element in enumerate(sorted(self.elements.values(),
-                key=lambda elt: elt.current_data.name)[self.scroll_position:]):
-            if row > max_rows:
-                break
-            element.print_to_window(self.window, row, self.started_time)
-        self.window.addstr(max_rows + 1, 0,
-                "Message count: %d (%d corrupted)" % (self.messages_received,
-                    self.source.corrupted_messages), curses.A_REVERSE)
-        self.window.addstr(max_rows + 2, 0,
-                "Total received: %s" %
-                sizeof_fmt(self.source.bytes_received),
-                curses.A_REVERSE)
-        self.window.addstr(max_rows + 3, 0, "Data Rate: %s" %
-            sizeof_fmt(self.source.bytes_received /
-                (total_seconds(datetime.now() - self.started_time)
-                    + 0.1)),
-             curses.A_REVERSE)
-        self.window.refresh()
-        self.screen_lock.release()
-
-    def scroll_down(self, lines):
-        self.screen_lock.acquire()
-        self.scroll_position = min(self.window.getmaxyx()[1],
-                self.scroll_position + lines)
-        self.screen_lock.release()
-
-    def scroll_up(self, lines):
-        self.screen_lock.acquire()
-        self.scroll_position = max(0, self.scroll_position - lines)
-        self.screen_lock.release()
-
 
 def run_dashboard(source_class, source_kwargs):
     vehicle = Vehicle()
