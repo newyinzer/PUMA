@@ -1,9 +1,6 @@
 # Data Logger for PUMA Project
-"""
-This module contains the methods for the ``openxc-dump`` command line program.
-`main` is executed when ``openxc-dump`` is run, and all other callables in this
-module are internal only.
-"""
+# This module is based off of the ``openxc-dump`` command line program.
+
 from __future__ import absolute_import
 
 import argparse
@@ -15,8 +12,9 @@ from .common import device_options, configure_logging, select_device
 
 def receive(message, **kwargs):
     message['timestamp'] = time.time()
+    # This next line needs to be changed
     print(JsonFormatter.serialize(message))
-
+    #
 
 def parse_options():
     parser = argparse.ArgumentParser(
