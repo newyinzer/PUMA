@@ -40,22 +40,49 @@ void setup() {
     if(switchInput > divergingThreshold) { SPINB[i] = SD; }
     else { SPINB[i] = DS; }
   }
-  Serial.println("Current Switch States Read");
+  Serial.println("Initial Switch States Read");
 }
 
 void loop() {
+  int i = 0;
+  int switchInput = 0;
   
-  for(int i = maxint; i >= 0; i = i - 10) {
-    servo1.write(i);
-    Serial.println(i);
-    delay(25);
+  // Perform Switch Setting
+  for(i = 0; i < maxPins; i++) {
+    if(SPINB[i] == SD) {
+      // Switch Set to Diverging
+      digitalWrite(SPIND[i], HIGH);
+      delay(250);
+      digitalWrite(SPIND[i], LOW);
+      SPINB[i] = D;
+    }
+    else if(SPINB[i] == DS) {
+      // Switch Set to Straight
+      digitalWrite(SPINS[i], HIGH);
+      delay(250);
+      digitalWrite(SPINS[i], LOW);
+      SPINB[i] = S;
+    }
   }
   
-  for(int i = 0; i < maxint; i = i + 10) {
-    servo1.write(i);
-    Serial.println(i);
-    delay(50);
+  // Perform Switch Checking
+  for(i = 0; i < maxPins; i++) {
+    switchInput = analogRead(SPINA[i]);
+    if(switchInput > divergingThreshold) { // Is Diverging
+      if(SPINB[i] == S) { SPINB[i] = SD; } // Set to Diverging
+      else if(SPINB[i] == D) { SPINB[i] = D; } // Is Fine
+      else { // This is an error
+        SPINB[i] = SD;
+        Serial.println("Switch State Error");
+      }
+    }
+    else { // Is Straight
+      if(SPINB[i] == D) { SPINB[i] = DS; } // Set to Straight
+      else if(SPINB[i] == S) { SPINB[i] = S; } // Is Fine
+      else { // This is an error
+        SPINB[i] = DS;
+        Serial.println("Switch State Error");
+      }
+    }
   }
-  delay(2000);
-  
 }
