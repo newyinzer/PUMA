@@ -9,6 +9,7 @@ static const int SD = 1; // Straight to Divering
 static const int D = 2; // Diverging
 static const int DS = 3; // Diverging to Straight
 static const int divergingThreshold = 512; // HIGH is diverging, LOW is straight
+static const int delayTime = 1000; // Time to keep H-Bridge activated
 
 int SPINS[] = {22,24,26,28,30,32,34,36,38,40, 42, 44, 46, 48, 50, 52}; // Straight Track Pins
 int SPIND[] = {23,25,27,29,31,33,35,37,39,41, 43, 45, 47, 49, 51, 53}; // Diverging Track Pins
@@ -52,14 +53,14 @@ void loop() {
     if(SPINB[i] == SD) {
       // Switch Set to Diverging
       digitalWrite(SPIND[i], HIGH);
-      delay(250);
+      delay(delayTime);
       digitalWrite(SPIND[i], LOW);
       SPINB[i] = D;
     }
     else if(SPINB[i] == DS) {
       // Switch Set to Straight
       digitalWrite(SPINS[i], HIGH);
-      delay(250);
+      delay(delayTime);
       digitalWrite(SPINS[i], LOW);
       SPINB[i] = S;
     }
