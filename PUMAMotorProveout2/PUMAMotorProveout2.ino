@@ -4,7 +4,7 @@ int IN2=3;//connected to Arduino's port 3
 int ENB=6;//connected to Arduino's port 6(output pwm)
 int IN3=4;//connected to Arduino's port 4
 int IN4=7;//connected to Arduino's port 7
-int CFG=0;//system on
+int CFG=1;//system on
 
 void setup() {
   pinMode(ENA,OUTPUT);//output

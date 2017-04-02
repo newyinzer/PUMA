@@ -31,7 +31,7 @@ Turret Data:
 #include <RF24.h>
 #include <RF24_config.h>
 #include <nRF24L01.h>
-#include <printf.h>
+//#include <printf.h>
 
 // Pin Assignments
 #define ERR_PIN 3 // Turn on if message not sent
@@ -63,6 +63,7 @@ Turret Data:
 // Variables
 int lval;
 int rval;
+int fval;
 
 // Pipes
 const uint64_t pipe_r = 0xF0F0F0F0D2LL; // Define the receive pipe
@@ -143,16 +144,17 @@ byte processJoystick(int val) {
 void setup()
 {
   // Start serial transmission
-  Serial.begin(57600);
+  //Serial.begin(9600);
   
   // Wait 2 seconds
   delay(2000);
-  printf_begin();
+  //printf_begin();
   
   // Start Radio
   done = radio.begin();
   radio.enableDynamicPayloads();
-  radio.setRetries(5,15);
+  //radio.setRetries(5,15);
+  radio.setRetries(5,0);
   radio.openWritingPipe(pipe_t);
   radio.openReadingPipe(1,pipe_r);
   radio.startListening();
@@ -160,6 +162,7 @@ void setup()
   // Initialize variables
   lval = 0;
   rval = 0;
+  fval = 0;
   joystick[0] = 0;
   joystick[1] = 0;
   joystick[2] = 0;
@@ -187,28 +190,50 @@ void loop()
   // Read Joystick Values
   lval = analogRead(INL);
   rval = analogRead(INR);
-  printf("Left = %d Right = %d\n",lval,rval);
+  //Serial.print("Left = ");
+  //Serial.print(lval);
+  //Serial.print(" Right = ");
+  //Serial.print(rval);
+  //Serial.print("\n");
+  //printf("Left = %d Right = %d\n",lval,rval);
 
   // Set up message
   joystick[0] = processJoystick(lval);
   joystick[1] = processJoystick(rval);
-  joystick[2] = processTurret();
+  joystick[2] = 0;
+  //joystick[2] = processTurret();
   joystick[3] = 0;
   
   // Send Joystick Values
   radio.stopListening();
-  printf("Now Sending Left = %d Right = %d Turret = %d Other = %d Status = ",joystick[0],joystick[1],joystick[2],joystick[3]);
+  //radio.flush_tx();
+  //printf("Now Sending Left = %d Right = %d Turret = %d Other = %d Status = ",joystick[0],joystick[1],joystick[2],joystick[3]);
+  //Serial.print(fval);
+  //Serial.print(" Now Sending Left = ");
+  //Serial.print(joystick[0]);
+  //Serial.print(" Right = ");
+  //Serial.print(joystick[1]);
+  //Serial.print(" Turret = ");
+  //Serial.print(joystick[2]); 
+  //Serial.print(" Other = ");
+  //Serial.print(joystick[3]);
+  //Serial.print(" Status = ");
   done = radio.write(&joystick, 4);
   if (done) { 
-    printf("SUCCESS\n"); 
+    //Serial.print("SUCCESS\n");
+    //printf("SUCCESS\n"); 
     digitalWrite(ERR_PIN,LOW);
   }
   else { 
-    printf("FAILURE\n"); 
+    //Serial.print("FAILURE\n");
+    //printf("FAILURE\n"); 
     digitalWrite(ERR_PIN,HIGH);
   }
   radio.startListening();
 
   // Wait
+  radio.powerDown(); 
   delay(100);
+  radio.powerUp(); 
+  fval++;
 }
