@@ -24,6 +24,9 @@ Turret Data:
 5 - Unused
 6 - Unused
 7 - Unused
+
+Code Reference:
+https://arduino-info.wikispaces.com/Nrf24L01-2.4GHz-ExampleSketches
 */
 
 // Libraries
@@ -153,6 +156,9 @@ void setup()
   // Set up error output
   pinMode(ERR_PIN,OUTPUT);
   digitalWrite(ERR_PIN,HIGH);
+  
+  // Write Ready Message
+  Serial.print("Ready to Transmit\n");
 }
 
 // loop: Runs constantly
