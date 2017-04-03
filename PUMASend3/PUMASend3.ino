@@ -125,7 +125,7 @@ void setup()
   
   // Start Radio
   done = radio.begin();
-  //radio.setChannel(108);  // Above most Wifi Channels <-- do we need this?
+  //radio.setChannel(108);  // Above most Wifi Channels // do we need this?
   radio.setPALevel(RF24_PA_MAX);
   radio.openWritingPipe(pipe_t);
   delay(1000);
@@ -166,19 +166,14 @@ void loop()
   //Serial.print(" Right = ");
   //Serial.print(rval);
   //Serial.print("\n");
-  //printf("Left = %d Right = %d\n",lval,rval);
 
   // Set up message
   joystick[0] = processJoystick(lval);
   joystick[1] = processJoystick(rval);
-  joystick[2] = 0;
-  //joystick[2] = processTurret();
+  joystick[2] = processTurret();
   joystick[3] = 0;
   
   // Send Joystick Values
-  radio.stopListening();
-  //radio.flush_tx();
-  //printf("Now Sending Left = %d Right = %d Turret = %d Other = %d Status = ",joystick[0],joystick[1],joystick[2],joystick[3]);
   //Serial.print(fval);
   //Serial.print(" Now Sending Left = ");
   //Serial.print(joystick[0]);
@@ -189,36 +184,18 @@ void loop()
   //Serial.print(" Other = ");
   //Serial.print(joystick[3]);
   //Serial.print(" Status = ");
-  done = radio.write(&joystick, 4);
+  done = radio.write(&joystick, sizeof(joystick));
   if (done) { 
-    //Serial.print("SUCCESS\n");
-    //printf("SUCCESS\n"); 
+    Serial.print("SUCCESS\n");
     digitalWrite(ERR_PIN,LOW);
   }
   else { 
-    //Serial.print("FAILURE\n");
-    //printf("FAILURE\n"); 
+    Serial.print("FAILURE\n");
     digitalWrite(ERR_PIN,HIGH);
   }
-  radio.startListening();
+  
 
   // Wait
-  radio.powerDown(); 
   delay(100);
-  radio.powerUp(); 
   fval++;
 }
-
-void loop()   /****** LOOP: RUNS CONSTANTLY ******/
-{
-  myRadio.write( &dataTransmitted, sizeof(dataTransmitted) ); //  Transmit the data
-
-  Serial.print(F("Data Transmitted = "));
-  Serial.print(dataTransmitted);
-  Serial.println(F(" No Acknowledge expected"));
-  dataTransmitted = dataTransmitted + 1;  // Send different data next time
-  delay(500);
-
-}//--(end main loop )---
-
-
