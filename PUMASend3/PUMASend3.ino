@@ -34,6 +34,7 @@ https://arduino-info.wikispaces.com/Nrf24L01-2.4GHz-ExampleSketches
 #include <RF24.h>
 #include <RF24_config.h>
 #include <nRF24L01.h>
+#include "printf.h"
 
 // Pin Assignments
 #define ERR_PIN 3 // Turn on if message not sent
@@ -76,6 +77,7 @@ RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 
 // end
 bool done;
+bool tx_ok, tx_fail, rx_ready;
 
 // Joystick Values
 byte joystick[4];  // 4 element array holding Joystick readings
@@ -121,16 +123,22 @@ byte processTurret() {
 void setup()
 {
   // Start serial transmission
-  Serial.begin(9600);
+  //Serial.begin(9600);
+  //printf_begin();
   
   // Wait 1 second
-  delay(1000);
+  delay(2000);
   
   // Start Radio
-  done = radio.begin();
+  radio.begin();
+  radio.enableDynamicPayloads();
+  radio.setRetries(5,15);
+  //radio.enableDynamicAck();
   //radio.setChannel(108);  // Above most Wifi Channels // do we need this?
-  radio.setPALevel(RF24_PA_MAX);
+  //radio.setPALevel(RF24_PA_HIGH);
   radio.openWritingPipe(pipe_t);
+  radio.openReadingPipe(1,pipe_r);
+  radio.stopListening();
   delay(1000);
 
   // Initialize variables
@@ -156,9 +164,7 @@ void setup()
   // Set up error output
   pinMode(ERR_PIN,OUTPUT);
   digitalWrite(ERR_PIN,HIGH);
-  
-  // Write Ready Message
-  Serial.print("Ready to Transmit\n");
+
 }
 
 // loop: Runs constantly
@@ -191,17 +197,29 @@ void loop()
   //Serial.print(joystick[3]);
   //Serial.print(" Status = ");
   done = radio.write(&joystick, sizeof(joystick));
+  //Serial.print(fval);
   if (done) { 
-    Serial.print("SUCCESS\n");
+    //Serial.print(" SUCCESS\n");
     digitalWrite(ERR_PIN,LOW);
   }
   else { 
-    Serial.print("FAILURE\n");
+    //Serial.print(" FAILURE\n");
     digitalWrite(ERR_PIN,HIGH);
   }
   
-
+  
   // Wait
-  delay(100);
   fval++;
+  delay(100);
+  //radio.whatHappened(tx_ok,tx_fail,rx_ready);
+  //Serial.print(tx_ok);
+  //Serial.print(" ");
+  //Serial.print(tx_fail);
+  //Serial.print(" ");
+  //Serial.print(rx_ready);
+  //Serial.print("\n");
+  //radio.printDetails();
+  //radio.powerDown();
+  //delay(100);
+  //radio.powerUp();
 }
