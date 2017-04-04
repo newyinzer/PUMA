@@ -124,7 +124,7 @@ byte processTurret() {
 void setup()
 {
   // Start serial transmission
-  //Serial.begin(9600);
+  Serial.begin(9600);
   //printf_begin();
   
   // Wait 1 second
@@ -198,13 +198,13 @@ void loop()
   //Serial.print(joystick[3]);
   //Serial.print(" Status = ");
   done = radio.write(&joystick, sizeof(joystick));
-  //Serial.print(fval);
+  Serial.print(fval);
   if (done) { 
-    //Serial.print(" SUCCESS\n");
+    Serial.print(" SUCCESS\n");
     digitalWrite(ERR_PIN,LOW);
   }
   else { 
-    //Serial.print(" FAILURE\n");
+    Serial.print(" FAILURE\n");
     digitalWrite(ERR_PIN,HIGH);
   }
   
