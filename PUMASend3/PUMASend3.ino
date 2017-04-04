@@ -37,6 +37,7 @@ https://arduino-info.wikispaces.com/Nrf24L01-2.4GHz-ExampleSketches
 #include "printf.h"
 
 // Pin Assignments
+#define CW_PIN 2 // Connected to clockwise input
 #define ERR_PIN 3 // Turn on if message not sent
 #define FIRE_PIN 4 // Connected to turret fire
 #define UP_PIN 5 // Connected to turret up
@@ -44,7 +45,7 @@ https://arduino-info.wikispaces.com/Nrf24L01-2.4GHz-ExampleSketches
 #define CE_PIN 7 // Radio
 #define CSN_PIN 8 // Radio
 #define CCW_PIN 9 // Connected to counter clockwise input
-#define CW_PIN 10 // Connected to clockwise input
+#define SS_PIN 10 // DON'T USE THIS PIN AS AN INPUT
 #define MOSI_PIN 11 // Radio
 #define MISO_PIN 12 // Radio
 #define SCK_PIN 13 // Radio
@@ -132,13 +133,13 @@ void setup()
   // Start Radio
   radio.begin();
   radio.enableDynamicPayloads();
-  radio.setRetries(5,15);
+  //radio.setRetries(5,15);
   //radio.enableDynamicAck();
   //radio.setChannel(108);  // Above most Wifi Channels // do we need this?
   //radio.setPALevel(RF24_PA_HIGH);
   radio.openWritingPipe(pipe_t);
-  radio.openReadingPipe(1,pipe_r);
-  radio.stopListening();
+  //radio.openReadingPipe(1,pipe_r);
+  //radio.stopListening();
   delay(1000);
 
   // Initialize variables
