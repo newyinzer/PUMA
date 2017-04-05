@@ -133,8 +133,8 @@ void setup()
   // Start Radio
   radio.begin();
   radio.enableDynamicPayloads();
-  //radio.setRetries(5,15);
-  //radio.enableDynamicAck();
+  radio.setRetries(5,15);
+  radio.enableDynamicAck();
   //radio.setChannel(108);  // Above most Wifi Channels // do we need this?
   //radio.setPALevel(RF24_PA_HIGH);
   radio.openWritingPipe(pipe_t);
